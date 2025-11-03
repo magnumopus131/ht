@@ -19,7 +19,7 @@ import {
   Phone,
   Stethoscope,
   MapPin,
-  Football,
+  CircleDot,
   UserCircle,
   PlayCircle,
   FileText,
