@@ -23,10 +23,16 @@ export default function Sessions() {
   const [sessions, setSessions] = useState<TrainingSession[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [athleteId] = useState<number>(() => {
-    const stored = localStorage.getItem('user_id')
-    return stored ? parseInt(stored) : 1
-  })
+  const [athleteId, setAthleteId] = useState<number>(1)
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('user_id')
+      if (stored) {
+        setAthleteId(parseInt(stored))
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const fetchSessions = async () => {

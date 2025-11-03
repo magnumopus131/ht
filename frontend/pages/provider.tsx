@@ -41,7 +41,6 @@ import {
   Send,
   Briefcase,
   GraduationCap,
-  Hospital,
   ArrowRight
 } from 'lucide-react'
 import { API_URL } from '../utils/api'
@@ -159,6 +158,16 @@ export default function Provider() {
   })
   const [showCreateRehab, setShowCreateRehab] = useState(false)
   const [showScheduleTelehealth, setShowScheduleTelehealth] = useState(false)
+  const [userName, setUserName] = useState<string>('Dr. Smith')
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('user_name')
+      if (stored) {
+        setUserName(stored)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     loadAthletes()
@@ -339,7 +348,7 @@ export default function Provider() {
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Medical Provider Portal</h1>
                 <p className="text-sm text-gray-600 mt-1">
-                  {localStorage.getItem('user_name') || 'Dr. Smith'} • Sports Medicine • Louisiana
+                  {userName} • Sports Medicine • Louisiana
                 </p>
               </div>
             </div>

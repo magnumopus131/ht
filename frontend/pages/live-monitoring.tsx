@@ -51,7 +51,7 @@ export default function LiveMonitoring() {
   const cameraRef = useRef<Camera | null>(null)
   const isInitializingRef = useRef(false)
   // Smoothing buffers for stable detection
-  const landmarkBufferRef = useRef<Array<{x: number, y: number, visibility: number}>[]>([])
+  const landmarkBufferRef = useRef<Array<({x: number, y: number, visibility: number} | null)[]>>([])
   const lastSmoothedPositionsRef = useRef<Map<number, {x: number, y: number}>>(new Map())
   const SMOOTHING_BUFFER_SIZE = 20 // Average over 20 frames for maximum stability
   const SMOOTHING_ALPHA = 0.1 // Very low exponential smoothing (very stable, slower response)
@@ -400,8 +400,7 @@ export default function LiveMonitoring() {
           enableSegmentation: false,
           smoothSegmentation: false,
           minDetectionConfidence: 0.3, // Reasonable threshold - too low can cause false positives
-          minTrackingConfidence: 0.5,  // Higher tracking confidence for stability
-          staticImageMode: false        // Continuous detection mode
+          minTrackingConfidence: 0.5   // Higher tracking confidence for stability
         })
         
         pose.onResults((results) => {
@@ -500,7 +499,7 @@ export default function LiveMonitoring() {
             
             // Very lenient threshold for dark clothing (black pants) - accept even very low confidence
             const hasVisibleLegs = legLandmarks.some((lm) => {
-              return lm && lm.visibility > 0.02  // Accept almost anything for dark clothing
+              return lm && (lm.visibility ?? 0) > 0.02  // Accept almost anything for dark clothing
             })
             
             // Log detailed leg detection info
@@ -524,11 +523,11 @@ export default function LiveMonitoring() {
               const currentFrame = legLandmarkIndices.map(idx => {
                 const lm = results.poseLandmarks[idx]
                 // Accept even extremely low visibility detections (for black pants)
-                if (lm && lm.visibility > 0.02) {
+                if (lm && (lm.visibility ?? 0) > 0.02) {
                   return {
                     x: lm.x,
                     y: lm.y,
-                    visibility: lm.visibility
+                    visibility: lm.visibility ?? 0
                   }
                 }
                 return null
@@ -688,7 +687,7 @@ export default function LiveMonitoring() {
                 return null
               })
               // Lowered threshold for dark clothing - accept detection with lower visibility
-              const hasGoodLegDetection = smoothedLandmarks.filter(lm => lm && lm.visibility > 0.15).length >= 2
+              const hasGoodLegDetection = smoothedLandmarks.filter(lm => lm && (lm.visibility ?? 0) > 0.15).length >= 2
               if (hasGoodLegDetection) {
                 analyzeACLRisk(smoothedPoseLandmarks, ctx, canvas.width, canvas.height) // No mirror flag needed - CSS handles it
                 
@@ -773,7 +772,7 @@ export default function LiveMonitoring() {
           camera.start()
           console.log('✅ MediaPipe Pose initialized and camera started')
           console.log('📹 Camera state:', {
-            isActive: camera.isActive || 'unknown',
+            status: 'active',
             frameRate: 'auto'
           })
         } catch (startError) {

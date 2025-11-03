@@ -153,6 +153,16 @@ export default function Coach() {
   const [selectedAthlete, setSelectedAthlete] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'training' | 'analytics'>('overview')
   const [selectedParish, setSelectedParish] = useState<string>('Orleans')
+  const [userName, setUserName] = useState<string>('Coach')
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('user_name')
+      if (stored) {
+        setUserName(stored)
+      }
+    }
+  }, [])
   const [selectedSport, setSelectedSport] = useState<string>('Football')
   const [selectedSeason, setSelectedSeason] = useState<string>(SEASONS[0])
   const [showEmergencyContacts, setShowEmergencyContacts] = useState(false)
@@ -293,7 +303,7 @@ export default function Coach() {
                 <div>
                   <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Coach Dashboard</div>
                   <div className="text-sm text-gray-600 mt-1">
-                    {localStorage.getItem('user_name') || 'Coach'} • {selectedParish} Parish
+                    {userName} • {selectedParish} Parish
                   </div>
                 </div>
               </div>

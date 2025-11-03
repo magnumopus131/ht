@@ -553,8 +553,7 @@ export default function SessionAnalysis() {
                 gl={{ 
                   antialias: true, 
                   alpha: false,
-                  powerPreference: "high-performance",
-                  physicallyCorrectLights: true
+                  powerPreference: "high-performance"
                 }}
               >
                 <color attach="background" args={['#0a0a0f']} />
@@ -619,8 +618,6 @@ export default function SessionAnalysis() {
                   title="3D View Knee"
                   frameBorder="0"
                   allowFullScreen={true}
-                  mozAllowFullScreen={true}
-                  webkitAllowFullScreen={true}
                   allow="autoplay; fullscreen; xr-spatial-tracking"
                   className="w-full h-full"
                   style={{ border: 0 }}

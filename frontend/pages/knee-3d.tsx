@@ -463,8 +463,6 @@ export default function Knee3D() {
               title="3D View Knee"
               frameBorder="0"
               allowFullScreen={true}
-              mozAllowFullScreen={true}
-              webkitAllowFullScreen={true}
               allow="autoplay; fullscreen; xr-spatial-tracking"
               className="w-full h-full"
               style={{ border: 0 }}
