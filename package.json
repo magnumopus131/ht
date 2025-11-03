@@ -1,0 +1,21 @@
+{
+  "name": "dear-tear-platform",
+  "version": "1.0.0",
+  "description": "Dear, Tear - Louisiana Youth Athlete Protection Platform",
+  "scripts": {
+    "install:backend": "cd backend && pip install -r requirements.txt",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "dev:backend": "cd backend && python main.py",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "health-tech",
+    "athlete-health",
+    "ACL-injury-prevention"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
