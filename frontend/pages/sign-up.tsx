@@ -40,11 +40,19 @@ export default function SignUp() {
     setIsLoading(true)
     try {
       console.log('Creating account with data:', { email: formData.email, name: formData.name, role: formData.role })
+      console.log('API URL:', API_URL)
+      console.log('Full endpoint:', `${API_URL}/users`)
+      
       const response = await axios.post(`${API_URL}/users`, {
         email: formData.email,
         name: formData.name,
         password: formData.password,
         role: formData.role
+      }, {
+        timeout: 10000, // 10 second timeout
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
       
       console.log('Account created successfully:', response.data)
@@ -53,9 +61,34 @@ export default function SignUp() {
       router.push('/sign-in')
     } catch (err: any) {
       console.error('Sign up error:', err)
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to create account. Please try again.'
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        config: err.config
+      })
+      
+      let errorMessage = 'Failed to create account. Please try again.'
+      
+      if (err.response) {
+        // Server responded with error
+        if (err.response.status === 400) {
+          errorMessage = err.response.data?.detail || 'Email already registered or invalid data'
+        } else if (err.response.status === 404) {
+          errorMessage = 'Backend server not found. Please check if the API is running.'
+        } else if (err.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.'
+        } else {
+          errorMessage = err.response.data?.detail || `Error: ${err.response.status}`
+        }
+      } else if (err.request) {
+        // Request made but no response (network/CORS issue)
+        errorMessage = `Cannot connect to backend at ${API_URL}. Please check if the server is running and CORS is configured correctly.`
+      } else {
+        errorMessage = err.message || 'An unexpected error occurred'
+      }
+      
       setError(errorMessage)
-      console.error('Full error response:', err.response?.data)
     } finally {
       setIsLoading(false)
     }

@@ -24,10 +24,20 @@ export default function SignIn() {
 
     try {
       console.log('Attempting login to:', `${API_URL}/auth/login`)
+      console.log('API URL:', API_URL)
+      console.log('Full endpoint:', `${API_URL}/auth/login`)
+      
       const response = await axios.post(`${API_URL}/auth/login`, {
         email,
         password
+      }, {
+        timeout: 10000, // 10 second timeout
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
+      
+      console.log('Login successful:', response.data)
       
       // Store token and user info
       localStorage.setItem('access_token', response.data.access_token)
@@ -39,19 +49,34 @@ export default function SignIn() {
       router.push('/dashboard')
     } catch (err: any) {
       console.error('Login error:', err)
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        config: err.config
+      })
+      
+      let errorMessage = 'An error occurred. Please try again.'
+      
       if (err.response) {
         // Server responded with error
-        if (err.response.status === 404) {
-          setError('Login endpoint not found. Please make sure the backend server is running and restarted.')
+        if (err.response.status === 401) {
+          errorMessage = 'Incorrect email or password'
+        } else if (err.response.status === 404) {
+          errorMessage = 'Login endpoint not found. Please make sure the backend server is running and the API URL is correct.'
+        } else if (err.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.'
         } else {
-          setError(err.response?.data?.detail || 'Incorrect email or password')
+          errorMessage = err.response.data?.detail || `Error: ${err.response.status}`
         }
       } else if (err.request) {
-        // Request made but no response
-        setError('Cannot connect to server. Please make sure the backend is running.')
+        // Request made but no response (network/CORS issue)
+        errorMessage = `Cannot connect to backend at ${API_URL}. Please check if the server is running and CORS is configured correctly.`
       } else {
-        setError('An error occurred. Please try again.')
+        errorMessage = err.message || 'An unexpected error occurred'
       }
+      
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
